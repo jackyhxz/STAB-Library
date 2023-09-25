@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!-- Nikaloziki Kutzhizvilili -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +37,7 @@
     <script>
 
     var spreadSheet;
-    // checks if the spread sheet data is already in local storage so we dont send as many requests
+    // checks if the spread sheet data is already in local storage so we dont send as many requests hi this is
     function isDataHere () {
             if (typeof(localStorage.getItem("spread-sheet"))!='undefined') {
                 console.log(1)
@@ -68,7 +69,7 @@
         if (event.key === "Enter") {
             for (let i = 0; i < spreadSheet.data.length; i++) {
                 if (spreadSheet.data[i].School_Email.toLowerCase() == document.getElementById("searching-for-checked-out-books").value) {
-                    if (!(document.getElementById("users-checked-out-books").value.contains(spreadSheet.data[i].Title)) {
+                    if (!(document.getElementById("users-checked-out-books").value.contains(spreadSheet.data[i].Title))) {
                         document.getElementById("users-checked-out-books").innerHTML = document.getElementById("users-checked-out-books").innerHTML + spreadSheet.data[i].Book_Title;
                     }
                 }
