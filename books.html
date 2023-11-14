@@ -15,10 +15,12 @@
     <script src="jquery-3.3.1copy.js"></script>
 </head>
 
+<!-- onload means run the function everytime the code loads-->
 <body onload="isDataHere()">
     <div id="books-topBar">
         
     </div>
+    <!-- top menu bar-->
     <div id="global-navbar">
         <ul id="nav-bar">
             <li><a href="index.html"><img id="nav-bar-home-img" src="navBarHomePageImg.png" alt="Home Page Image Button" width="30px" height="30px"></a></li>
@@ -39,6 +41,7 @@
                     <!-- end of searching-div div -->
                 </div><br>
                 <div id="genre-div">
+                    <!-- checkbox for each filtering category -->
                     <input type="checkbox" name="genre" class="pointer" id="checkbox-fiction" value="Fiction">
                     <label for="checkbox-fiction" class="pointer">Fiction</label>
                     <input type="checkbox" name="genre"class="pointer" id="checkbox-nonfiction" value="Nonfiction">
@@ -76,13 +79,14 @@
 
             // checks if the spread sheet data is already in local storage so we dont send as many requests
             function isDataHere () {
-                if (typeof(localStorage.getItem("spread-sheet"))=='undefined') {
+                if (typeof(localStorage.getItem("spread-sheet"))!='undefined') {
                     console.log(1)
                     getData();
                 } else {
                     spreadSheet = JSON.parse(localStorage.getItem("spread-sheet"));
                     createNewArray(spreadSheet);
                     display();
+                    
                 }
             }
 
@@ -111,13 +115,14 @@
 
             // gets the data from the spreadsheet
             function getData() {
+                // the link is the spreadsheet linked to the api account; basically to get the spreadsheet data
                 fetch("https://api.apispreadsheets.com/data/eksihvfg6DJsWlvl/").then(res => {
                     if (res.status === 200) {
-                        //SUCCESS
+                        //check resonse status to check if SUCCESS
                         res.json().then(data => {
-                            localStorage.setItem("spread-sheet", JSON.stringify(data));
-                            spreadSheet = JSON.parse(localStorage.getItem("spread-sheet"));
-                            createNewArray(spreadSheet);
+                            localStorage.setItem("spread-sheet", JSON.stringify(data));//send the data to local storage
+                            spreadSheet = JSON.parse(localStorage.getItem("spread-sheet"));//create a new spreadsheet item to get the data from local storage for displaying
+                            createNewArray(spreadSheet);//basically gets data and display
                             display();
                         }).catch(err => console.log(err))
                     }
