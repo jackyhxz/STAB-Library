@@ -76,7 +76,7 @@
 
             // checks if the spread sheet data is already in local storage so we dont send as many requests
             function isDataHere () {
-                if (typeof(localStorage.getItem("spread-sheet"))!='undefined') {
+                if (typeof(localStorage.getItem("spread-sheet"))=='undefined') {
                     console.log(1)
                     getData();
                 } else {
