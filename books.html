@@ -87,7 +87,7 @@
     
                 // checks if the spread sheet data is already in local storage so we dont send as many requests
                 function isDataHere () {
-                    if (typeof(localStorage.getItem("spread-sheet"))!='undefined') {
+                    if (typeof(localStorage.getItem("spread-sheet"))=='undefined') {
                         console.log(1)
                         getData();
                     } else {
@@ -146,7 +146,6 @@
                 function createNewArray(datas) {
                     for (let i = 0; i < datas.data.length; i++) {
                         books.push(datas.data[i].Book_Title, datas.data[i].Author, datas.data[i].Summary, datas.data[i].Genre, datas.data[i].Room, datas.data[i].Shelf);
-                        print(books);
                     }
                 
                 }

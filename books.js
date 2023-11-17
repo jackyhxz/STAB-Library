@@ -72,5 +72,9 @@ export async function importToDatabase () {
 
 export const getBookData = async function(){
     const booksInDatabase = await getDocs(collection(db, "library"));
-    
+    booksInDatabase.forEach((books) => {
+        var books = [];
+        books.push(books.data().title, books.data().author, books.data().summary, books.data().genre, books.data().room, books.data().shelf);
+        localStorage.setItem("spread-sheet", JSON.stringify(data));//send the data to local storage
+    })
 }
