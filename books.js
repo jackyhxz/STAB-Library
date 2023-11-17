@@ -69,3 +69,8 @@ export async function importToDatabase () {
 
   document.getElementsByTagName("body").style.cursor = "auto";
 }
+
+export const getBookData = async function(){
+    const booksInDatabase = await getDocs(collection(db, "library"));
+    
+}
