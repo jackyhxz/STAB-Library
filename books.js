@@ -72,19 +72,31 @@ export async function importToDatabase () {
   document.getElementsByTagName("body").style.cursor = "auto";
 }
 
+// first check if the book already exists in the local storage (which means that the user hasn't closed the website since last load), it uses local data to display
+// if local data not exists (which means the user just opened the website), then the 
+export const getBookData = async function(){ // !!!!!!!!!!!!!!!do i need to clear localstorage using localStorage.clear() after a change in firebase??????????
+    if(localStorage.getItem("book-data") !== null){
+        var books = JSON.parse(localStorage.getItem("book-data"));
+        display(books);
+        console.log("suc");
+    }else{
+        bookDataFirebase();
+    }
+}
+
 // runs the function when refreshing the page: to get the books from firebase
-export const getBookData = async function(){
+export const bookDataFirebase = async function(){
     const booksInDatabase = await getDocs(collection(db, "library"));
     var books = [];
     booksInDatabase.forEach((book) => {
         books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf);
     })
-    //localStorage.setItem("book-sheet", book);//send the data to local storage
-    //localStorage.setItem("book-count", booksInDatabase.data().count);
+    //localStorage.setItem("book-data", JSON.stringify(books));//send the data to local storage
+    //console.log(JSON.parse(localStorage.getItem("book-data")));
+    console.log("Store the data locally successful");
     //console.log("refresh");
     display(books);
 }
-
 
 function makeButton(title) {
     const button = document.createElement('button');
