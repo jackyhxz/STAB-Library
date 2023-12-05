@@ -75,34 +75,36 @@ export async function importToDatabase () {
 // first check if the book already exists in the local storage (which means that the user hasn't closed the website since last load), it uses local data to display
 // if local data not exists (which means the user just opened the website), then the 
 export const getBookData = async function(){ // !!!!!!!!!!!!!!!do i need to clear localstorage using localStorage.clear() after a change in firebase??????????
-    if(localStorage.getItem("book-data") !== null){
+    if(localStorage.getItem("book-data") !== null){ 
         var books = JSON.parse(localStorage.getItem("book-data"));
         display(books);
-        console.log("suc");
+        console.log("suc-from-local-storage");
     }else{
         bookDataFirebase();
     }
 }
 
-// runs the function when refreshing the page: to get the books from firebase
+// runs the function when first open the page: to get the books from firebase
 export const bookDataFirebase = async function(){
     const booksInDatabase = await getDocs(collection(db, "library"));
     var books = [];
     booksInDatabase.forEach((book) => {
         books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf);
     })
-    //localStorage.setItem("book-data", JSON.stringify(books));//send the data to local storage
+    localStorage.setItem("book-data", JSON.stringify(books));//send the data to local storage
     //console.log(JSON.parse(localStorage.getItem("book-data")));
     console.log("Store the data locally successful");
     //console.log("refresh");
     display(books);
 }
 
+//make button for the check out books, and set the value of the button to the id 
 function makeButton(title) {
     const button = document.createElement('button');
     button.textContent = "Check out"; 
     button.addEventListener("click", showCheckOut); //call the function "showCheckOut" when click
     button.classList.add("check-out-button"); //add class for css use
+    button.value = title;
     //return button =  `<button onclick="showCheckOut()" class="check-out-button" value='` + title + `'>` + "Check Out" + `</button>`
     return button;
 }
@@ -113,8 +115,8 @@ function showCheckOut () {
 }
 
 // allows us to add an event listener to elements added to the DOM
+// and pass the value of the button to the checkOut page; the value of the button is set in makeButton function
 $('body').on('click', '.check-out-button', function() {
-    console.log(1)
     let fired_button = $(this).val();
     localStorage.setItem("checkOutBook", fired_button);  
     location.href = "checkOut.html"
@@ -131,7 +133,7 @@ export function display(books) {
     for (let i = 0; i < books.length; i += 6) {
         if (i < books.length - 12) {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + books[i] + "</h3><p>" + books[i+1] + "</p><p>" + books[i+2] + "</p>" + "<p>Check Out Copy In Room: " + books[i+4] + "<br>On Shelf: " + books[i+5] + "</p></br>"; //make button here corresponds to the page of checkout book?
-            document.getElementById("div-books").appendChild(makeButton(books[i]));
+            document.getElementById("div-books").appendChild(makeButton(books[i]));//pass on the book title to the makeButton function
             var hzRule = document.createElement('hr');// make a hr, as you cannot directly add a <hr> in appendChild
             document.getElementById("div-books").appendChild(hzRule);
             //console.log(books[i]);
