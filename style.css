@@ -436,7 +436,7 @@ text-align: center;
   color: gray;
   margin-top: 5px;
   margin-bottom: 5px;
-  width: 30vw;
+  width: 20vw;
   height: 25px;
 }
 
@@ -471,7 +471,7 @@ text-align: center;
 #returning-book-button {
   color: white;
   border-color: white;
-  width: 30vw;
+  width: 20vw;
   height: 35px;
   border-radius: 10px;
   font-size: medium;
@@ -696,4 +696,4 @@ content: "";
 display: table;
 clear: both;
 
-}  
+}
