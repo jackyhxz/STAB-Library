@@ -17,18 +17,60 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+export function autoFill() {
+    if (typeof localStorage.getItem("checkOutBook") !== null) {
+        var cur_ISBN = localStorage.getItem("checkOutBook");
 
-// runs the function when refreshing the page: to get the books from firebase
-export const getBookData = async function(){
-    const booksInDatabase = await getDocs(collection(db, "library"));
-    var books = [];
-    booksInDatabase.forEach((book) => {
-        books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf);
+        if(localStorage.getItem("book-data") !== null){ 
+            var books = JSON.parse(localStorage.getItem("book-data"));
+            console.log("suc-from-local-storage");
+        }
+        for(let i = 0; i < books.length; i += 7){
+            if(books[i + 6] == cur_ISBN){
+                var cur_TITLE = books[i];
+                var cur_AUTHOR = books[i + 1];
+            }
+        }
+        document.getElementById("check-out-form-book-title").innerHTML = "Title:  " + cur_TITLE;
+        document.getElementById("cur_Author").innerHTML = "Author:  " + cur_AUTHOR;
+    }
+    document.getElementById("check-out-book-button").addEventListener("click", ()=> {
+        submitForm(cur_ISBN);
     })
-    //localStorage.setItem("book-sheet", book);//send the data to local storage
-    //localStorage.setItem("book-count", booksInDatabase.data().count);
-    //console.log("refresh");
-    display(books);
 }
 
-
+export const submitForm = async function (ISBN){
+    //try{
+        const booksInDatabase = await getDocs(collection(db, "library"));
+        booksInDatabase.forEach((book) => {
+            // if no book on the shelf???
+            if(book.data().ISBN == ISBN){
+                const cur_bookRef = book; //doc(db, "library", "book");
+                let totalCopies = cur_bookRef.data().total_copies;
+                let booksChecked = cur_bookRef.data().books_checked;
+                booksChecked += 1;
+                let checkedOutEmail = cur_bookRef.data().school_email;
+                // to get "copy on shelf", "check out email list"...of that doc and update them in the upDateDoc
+                if(totalCopies - booksChecked == 0){
+                    //an alert
+                    return;
+                }else{   
+                    let cur_student_email = document.getElementById("check-out-form-name-book").value;
+                    checkedOutEmail.push(cur_student_email); 
+                }
+                const curRef = doc(db, "library", book.id); // need to use a documentReference type instead of a documentSnapshot
+                updateDoc(curRef, {
+                    books_checked: booksChecked,
+                    school_email: checkedOutEmail
+                });
+                document.getElementById("check-out-book-button").value = "";
+                alert("Book successfully checked out! Return to the book page...");
+                location.href = "books.html";
+            }
+            
+        })
+    //}
+    //catch(e){
+        //console.log("Failed to check out due to upload error...");
+    //}
+}
