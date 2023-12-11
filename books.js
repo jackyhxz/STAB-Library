@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
 // https://firebase.google.com/docs/firestore
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -77,7 +77,7 @@ export async function importToDatabase () {
 // if local data not exists (which means the user just opened the website), then the 
 export const getBookData = async function(){ // !!!!!!!!!!!!!!!do i need to clear localstorage using localStorage.clear() after a change in firebase??????????
     //if change in firebase: 
-    localStorage.clear();
+    //localStorage.clear();
     if(localStorage.getItem("book-data") !== null){ 
         var books = JSON.parse(localStorage.getItem("book-data"));
         display(books);
@@ -92,7 +92,7 @@ export const bookDataFirebase = async function(){
     const booksInDatabase = await getDocs(collection(db, "library"));
     var books = [];
     booksInDatabase.forEach((book) => {
-        books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf, book.data().ISBN);
+        books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf, book.data().ISBN, book.id);
     })
     localStorage.setItem("book-data", JSON.stringify(books));//send the data to local storage
     //console.log(JSON.parse(localStorage.getItem("book-data")));
@@ -102,12 +102,12 @@ export const bookDataFirebase = async function(){
 }
 
 //make button for the check out books, and set the value of the button to the id 
-function makeButton(ISBN) {
+function makeButton(bookID) {
     const button = document.createElement('button');
     button.textContent = "Check out"; 
     button.addEventListener("click", showCheckOut); //call the function "showCheckOut" when click
     button.classList.add("check-out-button"); //add class for css use
-    button.value = ISBN;
+    button.value = bookID;
     //return button =  `<button onclick="showCheckOut()" class="check-out-button" value='` + title + `'>` + "Check Out" + `</button>`
     return button;
 }
@@ -133,17 +133,17 @@ export function display(books) {
     
     // displays the books, (but why it's slow though, probably need to fix that later?)
     document.getElementById("div-books").innerHTML = "";
-    for (let i = 0; i < books.length; i += 7) {
-        if (i < books.length - 14) {
+    for (let i = 0; i < books.length; i += 8) {
+        if (i < books.length - 16) {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + books[i] + "</h3><p>" + books[i+1] + "</p><p>" + books[i+2] + "</p>" + "<p>Check Out Copy In Room: " + books[i+4] + "<br>On Shelf: " + books[i+5] + "</p></br>"; //make button here corresponds to the page of checkout book?
-            document.getElementById("div-books").appendChild(makeButton(books[i + 6]));//pass on the book title to the makeButton function
+            document.getElementById("div-books").appendChild(makeButton(books[i + 7]));//pass on the book title to the makeButton function
             var hzRule = document.createElement('hr');// make a hr, as you cannot directly add a <hr> in appendChild
             document.getElementById("div-books").appendChild(hzRule);
             //console.log(books[i]);
             //console.log(books[i+5]);
         } else {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + books[i] + "</h3><p>" + books[i+1] + "</p><p>" + books[i+2] + "</p>" + "<p>Check Out Copy In Room: " + books[i+4] + "<br>On Shelf: " + books[i+5] + "</p></br>";
-            document.getElementById("div-books").appendChild(makeButton(books[i + 6]));
+            document.getElementById("div-books").appendChild(makeButton(books[i + 7]));
         }
     }
 
@@ -154,12 +154,14 @@ export function display(books) {
     document.getElementById("searching-for-books").oninput = () => {
         let search = document.getElementById("searching-for-books").value;
         var results = [];
-        for (let i = 0; i < books.length; i += 7) {
-            if(books[i] === null){
-                continue;
+        for (let i = 0; i < books.length; i += 8) {
+            try{
+                if (books[i].toLowerCase().includes(search.toLowerCase()) || books[i + 1].toLowerCase().includes(search.toLowerCase()) || books[i + 2].toLowerCase().includes(search.toLowerCase())) {
+                    results.push(books[i], books[i + 1], books[i + 2], books[i + 3], books[i + 4], books[i + 5], books[i + 6], books[i + 7]);
+                }
             }
-            if (books[i].toLowerCase().includes(search.toLowerCase()) || books[i + 1].toLowerCase().includes(search.toLowerCase()) || books[i + 2].toLowerCase().includes(search.toLowerCase())) {
-                results.push(books[i], books[i + 1], books[i + 2], books[i + 3], books[i + 4], books[i + 5], books[i + 6]);
+            catch(e){// because there could be variables other than books in the firebase
+                continue;
             }
         }
     // updates the page to display books that match the search
@@ -193,15 +195,15 @@ checkboxes.forEach(function (checkbox) {
 // in that array on the screen
 export function updateSearching(results) {
     document.getElementById("div-books").innerHTML = "";
-    for (let i = 0; i < results.length; i += 7) {
-        if (i < results.length - 7) {
+    for (let i = 0; i < results.length; i += 8) {
+        if (i < results.length - 8) {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + results[i] + "</h3><p>" + results[i + 1] + "</p><p>" + results[i + 2] + "<br><br> Check Out Copy In Room: " + results[i + 4] + "<br>On Self: "+ results[i + 5] + "</p><br>";
-            document.getElementById("div-books").appendChild(makeButton(results[i + 6]));
+            document.getElementById("div-books").appendChild(makeButton(results[i + 7]));
             var hzRule = document.createElement('hr');// make a hr, as you cannot directly add a <hr> in appendChild
             document.getElementById("div-books").appendChild(hzRule);
         } else {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + results[i] + "</h3><p>" + results[i + 1] + "</p><p>" + results[i + 2]  + "<br><br> Check Out Copy in Room: " + results[i + 4] + "<br>On Self: "+ results[i + 5] + "</p><br>";
-            document.getElementById("div-books").appendChild(makeButton(results[i + 6]));
+            document.getElementById("div-books").appendChild(makeButton(results[i + 7]));
         }
     }
     document.getElementById("div-books").scrollTop = 0;
@@ -216,10 +218,10 @@ export function updateSearching(results) {
 export function limitGenre(enabledSettings, books) {
     var arr = []
     if (enabledSettings.length > 0) {
-        for (let i = 0; i < books.length; i += 7) {
+        for (let i = 0; i < books.length; i += 8) {
             if (enabledSettings.includes(books[i + 3])) {
                 //console.log(1)
-                arr.push(books[i], books[i + 1], books[i + 2], books[i + 3], books[i + 4], books[i + 5], books[i + 6]);
+                arr.push(books[i], books[i + 1], books[i + 2], books[i + 3], books[i + 4], books[i + 5], books[i + 6], books[i + 7]);
                 //console.log(arr)
             }
         }

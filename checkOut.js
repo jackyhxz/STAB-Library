@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
 // https://firebase.google.com/docs/firestore
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,60 +17,68 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export function autoFill() {
+export const autoFill = async function(){
     if (typeof localStorage.getItem("checkOutBook") !== null) {
-        var cur_ISBN = localStorage.getItem("checkOutBook");
+        var cur_ID = localStorage.getItem("checkOutBook");
 
         if(localStorage.getItem("book-data") !== null){ 
             var books = JSON.parse(localStorage.getItem("book-data"));
             console.log("suc-from-local-storage");
         }
-        for(let i = 0; i < books.length; i += 7){
-            if(books[i + 6] == cur_ISBN){
+        for(let i = 0; i < books.length; i += 8){
+            if(books[i + 7] == cur_ID){
                 var cur_TITLE = books[i];
                 var cur_AUTHOR = books[i + 1];
             }
         }
         document.getElementById("check-out-form-book-title").innerHTML = "Title:  " + cur_TITLE;
         document.getElementById("cur_Author").innerHTML = "Author:  " + cur_AUTHOR;
+        const cur_Ref = doc(db, "library", cur_ID);; //doc(db, "library", "book");
+        const cur_bookSnap = await getDoc(cur_Ref);
+        var copies_left = cur_bookSnap.data().total_copies - cur_bookSnap.data().books_checked;
+        document.getElementById("cur_Copies").innerHTML = "Copies Left:  " + copies_left;
     }
     document.getElementById("check-out-book-button").addEventListener("click", ()=> {
-        submitForm(cur_ISBN);
+        submitForm(cur_ID, copies_left);
     })
 }
 
-export const submitForm = async function (ISBN){
-    //try{
+export const submitForm = async function (ID, copies_left){
+    try{
         const booksInDatabase = await getDocs(collection(db, "library"));
-        booksInDatabase.forEach((book) => {
+        //booksInDatabase.forEach((book) => {
             // if no book on the shelf???
-            if(book.data().ISBN == ISBN){
-                const cur_bookRef = book; //doc(db, "library", "book");
-                let totalCopies = cur_bookRef.data().total_copies;
-                let booksChecked = cur_bookRef.data().books_checked;
+            //if(book.data().ISBN == ISBN){
+                const cur_Ref = doc(db, "library", ID);; //doc(db, "library", "book");
+                const cur_bookSnap = await getDoc(cur_Ref);
+                var booksChecked = cur_bookSnap.data().books_checked;
                 booksChecked += 1;
-                let checkedOutEmail = cur_bookRef.data().school_email;
+                var checkedOutEmail = cur_bookSnap.data().school_email;
                 // to get "copy on shelf", "check out email list"...of that doc and update them in the upDateDoc
-                if(totalCopies - booksChecked == 0){
+                if(copies_left == 0){
                     //an alert
                     return;
                 }else{   
                     let cur_student_email = document.getElementById("check-out-form-name-book").value;
                     checkedOutEmail.push(cur_student_email); 
                 }
-                const curRef = doc(db, "library", book.id); // need to use a documentReference type instead of a documentSnapshot
-                updateDoc(curRef, {
+                //console.log(booksChecked);
+                //console.log(checkedOutEmail);
+                //console.log(ID);
+                // need to use a documentReference type instead of a documentSnapshot
+                await updateDoc(cur_Ref, {
                     books_checked: booksChecked,
                     school_email: checkedOutEmail
                 });
                 document.getElementById("check-out-book-button").value = "";
                 alert("Book successfully checked out! Return to the book page...");
                 location.href = "books.html";
-            }
+            //}
             
-        })
-    //}
-    //catch(e){
-        //console.log("Failed to check out due to upload error...");
-    //}
+        //})
+    }
+    catch(e){
+        alert("Failed to check out due to upload error...Return to the book page...");
+        location.href = "books.html";
+    }
 }
