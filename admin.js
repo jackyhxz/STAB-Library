@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 // TODO: import libraries for Cloud Firestore Database
 // https://firebase.google.com/docs/firestore
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc} from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,79 +16,23 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-//this takes a file and uploads it to the database
-//to run you need to make an upload file html input with
-//id called URL
-
-//runs the code once and don't call it again until you want to make some changes to the data already in the firebase 
-export async function importToDatabase () {
-  const booksInDatabase = await getDocs(collection(db, "library"));
-
-    booksInDatabase.forEach((book) =>{
-        deleteDoc(doc(db, "library", book.id)); //deleteDoc basically deletes everything in the firebase before uploading again
-    }
-    )
-  // try{
-   var file = document.getElementById("bookcsv").files[0];
-        var reader = new FileReader();
-        reader.onload = function(event) {
-          var csvData = event.target.result;
-          var rows = csvData.split("\n");
-          for (var i = 0; i < rows.length; i++) {
-            var cells = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // split is just to include comma in the string without messing up the formatting, look at https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
-            console.log(cells);
-            try {
-                //console.log(cells[0]);
-              const docRef = addDoc(collection(db, "library"), {
-                title: cells[0], 
-                subtitle: cells[1],
-                author: cells[2],
-                author_last_first: cells[3],
-                translator: cells[4],
-                publisher: cells[5],
-                year_published: cells[6],
-                genre: cells[7],
-                summary: cells[8],
-                number_of_page: cells[9],
-                language: cells[10],
-                ISBN: cells[11],
-                building: cells[12],
-                room: cells[13],
-                shelf: cells[14],
-                books_checked: cells[15],
-                total_copies: cells[16],
-                school_email: [],
-                // need a list for each copies?
-              });
-              console.log("Document written with ID: ", docRef.id);
-            } 
-            catch (e) {
-              console.error("Error adding to database: ", e);
-            }
-            
-          }
-        };
-        reader.readAsText(file);
-
-  document.getElementsByTagName("body").style.cursor = "auto";
-}
 
 // first check if the book already exists in the local storage (which means that the user hasn't closed the website since last load), it uses local data to display
 // if local data not exists (which means the user just opened the website), then the 
-export const getBookData = async function(){ // !!!!!!!!!!!!!!!do i need to clear localstorage using localStorage.clear() after a change in firebase??????????
+export const getEditData = async function(){
     //if change in firebase: 
-    //localStorage.clear();
+    localStorage.clear();
     if(localStorage.getItem("book-data") !== null){ 
         var books = JSON.parse(localStorage.getItem("book-data"));
-        display(books);
+        displayeditpage(books);
         console.log("suc-from-local-storage");
     }else{
-        bookDataFirebase();
+        bookDataFirebaseEdit();
     }
 }
 
 // runs the function when first open the page: to get the books from firebase
-export const bookDataFirebase = async function(){
+export const bookDataFirebaseEdit = async function(){
     const booksInDatabase = await getDocs(collection(db, "library"));
     var books = [];
     booksInDatabase.forEach((book) => {
@@ -98,15 +42,15 @@ export const bookDataFirebase = async function(){
     //console.log(JSON.parse(localStorage.getItem("book-data")));
     console.log("Store the data locally successful");
     //console.log("refresh");
-    display(books);
+    displayeditpage(books);
 }
 
 //make button for the check out books, and set the value of the button to the id 
-function makeButton(bookID) {
+function makeEditButton(bookID) {
     const button = document.createElement('button');
-    button.textContent = "Check out"; 
+    button.textContent = "Edit Book"; 
     button.addEventListener("click", showCheckOut); //call the function "showCheckOut" when click
-    button.classList.add("check-out-button"); //add class for css use
+    button.classList.add("edit-button"); //add class for css use
     button.value = bookID;
     //return button =  `<button onclick="showCheckOut()" class="check-out-button" value='` + title + `'>` + "Check Out" + `</button>`
     return button;
@@ -120,31 +64,28 @@ function showCheckOut () {
 // allows us to add an event listener to elements added to the DOM
 // and pass the value of the button to the checkOut page; the value of the button is set in makeButton function
 // in this case, pass the ID of the firebase document into the check_out page, so i can access the firebase data
-$('body').on('click', '.check-out-button', function() {
+$('body').on('click', '.edit-button', function() {
     let fired_button = $(this).val();
-    localStorage.setItem("checkOutBook", fired_button);  
-    location.href = "checkOut.html"
+    localStorage.setItem("editID", fired_button);  
+    location.href = "edit.html"
 });
 
-// Select all checkboxes with the name 'genre' using querySelectorAll.
-var checkboxes = document.querySelectorAll("input[type=checkbox][name=genre]");
-let enabledSettings = []
 
-export function display(books) {
+export function displayeditpage(books) {
     
     // displays the books, (but why it's slow though, probably need to fix that later?)
     document.getElementById("div-books").innerHTML = "";
     for (let i = 0; i < books.length; i += 8) {
         if (i < books.length - 16) {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + books[i] + "</h3><p>" + books[i+1] + "</p><p>" + books[i+2] + "</p>" + "<p>Check Out Copy In Room: " + books[i+4] + "<br>On Shelf: " + books[i+5] + "</p></br>"; //make button here corresponds to the page of checkout book?
-            document.getElementById("div-books").appendChild(makeButton(books[i + 7]));//pass on the book title to the makeButton function
+            document.getElementById("div-books").appendChild(makeEditButton(books[i + 7]));//pass on the book title to the makeButton function
             var hzRule = document.createElement('hr');// make a hr, as you cannot directly add a <hr> in appendChild
             document.getElementById("div-books").appendChild(hzRule);
             //console.log(books[i]);
             //console.log(books[i+5]);
         } else {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + books[i] + "</h3><p>" + books[i+1] + "</p><p>" + books[i+2] + "</p>" + "<p>Check Out Copy In Room: " + books[i+4] + "<br>On Shelf: " + books[i+5] + "</p></br>";
-            document.getElementById("div-books").appendChild(makeButton(books[i + 7]));
+            document.getElementById("div-books").appendChild(makeEditButton(books[i + 7]));
         }
     }
 
@@ -175,6 +116,10 @@ use a polyfill for Array.forEach:
 https://vanillajstoolkit.com/polyfills/arrayforeach/
 */
 
+// Select all checkboxes with the name 'genre' using querySelectorAll.
+var checkboxes = document.querySelectorAll("input[type=checkbox][name=genre]");
+let enabledSettings = []
+
 // Use Array.forEach to add an event listener to each checkbox.
     checkboxes.forEach(function (checkbox) {
     checkbox.addEventListener('change', function () {
@@ -190,7 +135,6 @@ https://vanillajstoolkit.com/polyfills/arrayforeach/
 }
 
 
-
 // after somemone has searched for a book this will look through the title author and description
 // if it finds a match it adds it to a new array that will then display only the items
 // in that array on the screen
@@ -199,12 +143,12 @@ export function updateSearching(results) {
     for (let i = 0; i < results.length; i += 8) {
         if (i < results.length - 8) {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + results[i] + "</h3><p>" + results[i + 1] + "</p><p>" + results[i + 2] + "<br><br> Check Out Copy In Room: " + results[i + 4] + "<br>On Self: "+ results[i + 5] + "</p><br>";
-            document.getElementById("div-books").appendChild(makeButton(results[i + 7]));
+            document.getElementById("div-books").appendChild(makeEditButton(results[i + 7]));
             var hzRule = document.createElement('hr');// make a hr, as you cannot directly add a <hr> in appendChild
             document.getElementById("div-books").appendChild(hzRule);
         } else {
             document.getElementById("div-books").innerHTML = document.getElementById("div-books").innerHTML + "<h3>" + results[i] + "</h3><p>" + results[i + 1] + "</p><p>" + results[i + 2]  + "<br><br> Check Out Copy in Room: " + results[i + 4] + "<br>On Self: "+ results[i + 5] + "</p><br>";
-            document.getElementById("div-books").appendChild(makeButton(results[i + 7]));
+            document.getElementById("div-books").appendChild(makeEditButton(results[i + 7]));
         }
     }
     document.getElementById("div-books").scrollTop = 0;
@@ -229,5 +173,5 @@ export function limitGenre(enabledSettings, books) {
         updateSearching(arr)
         return;
     }
-    display(books)
+    displayeditpage(books)
 }

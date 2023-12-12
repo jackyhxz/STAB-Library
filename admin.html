@@ -32,19 +32,20 @@
     
     
     <!-- onload means run the function everytime the code loads-->
-    <body onload="getBookData()">
+    <body onload="getEditData()">
         <script type="module">
+            
             // import functions from the js in order to use it here in html
-            import {importToDatabase, getBookData, bookDataFirebase, display, updateSearching, limitGenre} from './books.js';
+            import {getEditData, bookDataFirebaseEdit, displayeditpage, updateSearching, limitGenre} from './admin.js';
              
               // window.importSchoolsToDatabase = importSchoolsToDatabase;
-              window.importToDatabase = importToDatabase;
-              window.getBookData = getBookData;
-              window.bookDataFirebase = bookDataFirebase;
-              window.display = display;
+              //window.importToDatabase = importToDatabase;
+              window.getEditData = getEditData;
+              window.bookDataFirebaseEdit = bookDataFirebaseEdit;
+              window.displayeditpage = displayeditpage;
               window.updateSearching = updateSearching;
               window.limitGenre = limitGenre;
-              //getBookData();
+              //getEditData();
             </script>
             <div id="books-topBar">
             
