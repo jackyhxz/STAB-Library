@@ -119,6 +119,7 @@ function showCheckOut () {
 
 // allows us to add an event listener to elements added to the DOM
 // and pass the value of the button to the checkOut page; the value of the button is set in makeButton function
+// in this case, pass the ID of the firebase document into the check_out page, so i can access the firebase data
 $('body').on('click', '.check-out-button', function() {
     let fired_button = $(this).val();
     localStorage.setItem("checkOutBook", fired_button);  

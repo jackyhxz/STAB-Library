@@ -47,7 +47,6 @@ export const submitForm = async function (ID, copies_left){
     try{
         const booksInDatabase = await getDocs(collection(db, "library"));
         //booksInDatabase.forEach((book) => {
-            // if no book on the shelf???
             //if(book.data().ISBN == ISBN){
                 const cur_Ref = doc(db, "library", ID);; //doc(db, "library", "book");
                 const cur_bookSnap = await getDoc(cur_Ref);
@@ -56,8 +55,8 @@ export const submitForm = async function (ID, copies_left){
                 var checkedOutEmail = cur_bookSnap.data().school_email;
                 // to get "copy on shelf", "check out email list"...of that doc and update them in the upDateDoc
                 if(copies_left == 0){
-                    //an alert
-                    return;
+                    alert("There is no copy left...Sorry...Return to the book page...");
+                    location.href = "books.html";
                 }else{   
                     let cur_student_email = document.getElementById("check-out-form-name-book").value;
                     checkedOutEmail.push(cur_student_email); 
