@@ -75,6 +75,42 @@ export async function importToDatabase () {
     document.getElementsByTagName("body").style.cursor = "auto";
   }
 
+// runs the function when first open the page: to get the books from firebase
+export const bookDataFirebase = async function(){
+    const booksInDatabase = await getDocs(collection(db, "library"));
+    var books = [];
+    booksInDatabase.forEach((book) => {
+        books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf);
+    })
+    localStorage.setItem("book-data", JSON.stringify(books));//send the data to local storage
+    //console.log(JSON.parse(localStorage.getItem("book-data")));
+    console.log("Store the data locally successful");
+}
+
+// first check if the book already exists in the local storage (which means that the user hasn't closed the website since last load), it uses local data to display
+// if local data not exists (which means the user just opened the website), then the 
+export const getBookData = async function(){ 
+    if(localStorage.getItem("book-data") !== null){ 
+        var books = JSON.parse(localStorage.getItem("book-data"));
+        display(books);
+        console.log("suc-from-local-storage");
+    }else{
+        bookDataFirebase();
+    }
+}
+
+//or book.data().school_email.includes(school)
+
+for (let i = 0; i < spreadSheet.data.length; i++) {
+    if (spreadSheet.data[i].School_Email.toLowerCase() == document.getElementById("searching-for-checked-out-books").value) {
+        if (!(document.getElementById("users-checked-out-books").value.contains(spreadSheet.data[i].Title))) {
+            document.getElementById("users-checked-out-books").innerHTML = document.getElementById("users-checked-out-books").innerHTML + spreadSheet.data[i].Book_Title;
+        }
+    }
+}
+    
+
+//what iM THINKING OF DOING IS MAKING A FOR LOOP THEN DOING arr[i].includes(SCHOOL EMAil)
   //when email entered and the books checkut shows, it will show the Title and the Author
   //on the backend, however, it will also have the books ISBN
   //the reason is because we want to make it so when the return button is pressed..
@@ -83,4 +119,3 @@ export async function importToDatabase () {
   
   //how will we be able to check to see if the book has succesfully being returned
   //i dont want to grab the firebase data once more to confirm that it worked because I feel like it would lag the site
-  
