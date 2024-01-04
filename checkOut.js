@@ -77,7 +77,7 @@ export const submitForm = async function (ID, copies_left){
         //})
     }
     catch(e){
-        alert("Failed to check out due to upload error...Return to the book page...");
+        alert("Failed to check out due to upload error. Please contact Mr. Taylor...Return to the book page...");
         location.href = "books.html";
     }
 }
