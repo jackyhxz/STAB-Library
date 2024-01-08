@@ -103,8 +103,8 @@ export const getBookData = async function(){
 
 for (let i = 0; i < spreadSheet.data.length; i++) {
     if (spreadSheet.data[i].School_Email.toLowerCase() == document.getElementById("searching-for-checked-out-books").value) {
-        if (!(document.getElementById("users-checked-out-books").value.contains(spreadSheet.data[i].Title))) {
-            document.getElementById("users-checked-out-books").innerHTML = document.getElementById("users-checked-out-books").innerHTML + spreadSheet.data[i].Book_Title;
+        if (!(document.getElementById("users-checked-out-books").value.includes(spreadSheet.data[i].Title))) {
+            document.getElementById("users-checked-out-books").innerHTML = document.getElementById("users-checked-out-books").innerHTML += spreadSheet.data[i].Book_Title;
         }
     } 
 // else{
