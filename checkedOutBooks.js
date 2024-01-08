@@ -106,10 +106,9 @@ for (let i = 0; i < spreadSheet.data.length; i++) {
         if (!(document.getElementById("users-checked-out-books").value.includes(spreadSheet.data[i].Title))) {
             document.getElementById("users-checked-out-books").innerHTML = document.getElementById("users-checked-out-books").innerHTML += spreadSheet.data[i].Book_Title;
         }
-    } 
-// else{
-    // console.log("looks like you dont have anything checked out. LLLLLLL")
-// }
+    } else{
+        console.log("looks like you dont have anything checked out. maybe you should.. get some books. books are sum what cool. me personally, i dont love books. the last time i read a book just cuz was in 7th grade. now i rarely read an entire book, even of school. I do regret not reading for fun anymore, because i feel like I would be a better writer and reader. There have been many time where my sister would edit my email and make 10x better. I feel like the more lines you see, the more creative or large your basket of words is. thank you america.")
+    }
 }
 
     
