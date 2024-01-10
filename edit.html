@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Return Books</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="edit.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-3.4.1.js"
         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <style>
@@ -87,7 +88,28 @@
                 <!-- end of form div --></div>
             <!-- end of return-body-center div --></div>
         <!-- end of return-body div --></div>
-    
+
+        <div class="bg-pop-up">
+            <div class="pop-up-content">
+                <p id="edit-page-title"></p>
+                <p2 id="edit-page-author"></p2>
+                <br>
+                <br>
+                <hr>
+                <br>
+                <p2 id="edit-change-style">Changes: </p2>
+                <br><br>
+                <p2 id="confirm-description" class="confirm-info"></p2>
+                <p2 id="confirm-genre" class="confirm-info"></p2>
+                <p2 id="confirm-room" class="confirm-info"></p2>
+                <p2 id="confirm-shelf" class="confirm-info"></p2>
+                <p2 id="confirm-student-deleted" class="confirm-info"></p2>
+                <p2 id="confirm-student-added" class="confirm-info"></p2>
+                <p2 id="no-change" class="confirm-info"></p2>
+                <button type="button" class="close-edit-button">Cancel</button>
+                <button type="button" id="confirm-edit-button" class="confirm-edit-button">Confirm Changes</button>
+            </div>
+        </div>
     <!--
     <script>
 

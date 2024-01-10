@@ -40,7 +40,7 @@ export const autoFill = async function(){
         document.getElementById("cur-room-display").innerHTML = "Change Room  (current: " + cur_bookSnap.data().room+ ") :";
         document.getElementById("cur-shelf-display").innerHTML = "Change Shelf  (current: " + cur_bookSnap.data().shelf+ ") :";
         document.getElementById("return-form-name-label").innerHTML = "Delete Student Email With Copy (Currently "+ cur_bookSnap.data().books_checked+ " copy has been checked out";
-        document.getElementById("add-student-display").innerHTML = "Add Another Student Who Checked Out Book Manually (Optional)";
+        document.getElementById("add-student-display").innerHTML = "Add Another Student Email Who Checked Out Book Manually (Optional)";
         // to replace the innerHTML
         var input_description = document.getElementById("new-description");
         input_description.innerHTML = cur_bookSnap.data().summary;
@@ -81,6 +81,7 @@ export const submitForm = async function (ID){
                 let deleted_student = document.getElementById("student-with-copy").value;
                 let student_list = cur_bookSnap.data().school_email;
                 if(deleted_student != "no-change"){
+                    var deleted_student_email = student_list[deleted_student];
                     student_list.splice(deleted_student, 1); //use splice to delete the student selected(ref to line 56)
                     changed_copies_checked -= 1;
                 }
@@ -90,21 +91,74 @@ export const submitForm = async function (ID){
                     student_list.push(new_student);
                 }
                 
+                // make the pop-up page display (no description right now)
+                let is_changed = false;
+                document.querySelector('.bg-pop-up').style.display = 'flex';
+                document.querySelector('.close-edit-button').addEventListener('click', function(){
+                    document.querySelector('.bg-pop-up').style.display = 'none';
+                    document.getElementById("confirm-description").innerHTML = "";
+                    document.getElementById("confirm-genre").innerHTML = "";
+                    document.getElementById("confirm-room").innerHTML = "";
+                    document.getElementById("confirm-shelf").innerHTML = "";
+                    document.getElementById("confirm-student-deleted").innerHTML = "";
+                    document.getElementById("confirm-student-added").innerHTML = "";
+                    document.getElementById("no-change").innerHTML = "";
+                })
+                document.getElementById("edit-page-title").innerHTML = "Title: " + cur_bookSnap.data().title;
+                document.getElementById("edit-page-author").innerHTML = "Author: " + cur_bookSnap.data().author;
+                if(cur_bookSnap.data().summary != changed_description){
+                    
+                    let oldText = "",     
+                    text = '';
+                    changed_description.split('').forEach(function(val, i){
+                    if (val != cur_bookSnap.data().summary.charAt(i))
+                        text += "<span class='edit-highlight'>"+val+"</span>";  
+                    else
+                        text += val;            
+                    });
+                    document.getElementById("confirm-genre").innerHTML = "Old Summary: " + cur_bookSnap.data().summary + "<br /> <br />" + "New Summary: " + text;
+                    is_changed = true;
+                }
+                if(cur_bookSnap.data().genre != changed_genre){
+                    document.getElementById("confirm-genre").innerHTML = "Genre: " + cur_bookSnap.data().genre + "  ->  " + changed_genre;
+                    is_changed = true;
+                }
+                if(cur_bookSnap.data().room != changed_room){
+                    document.getElementById("confirm-room").innerHTML = "Room: " + cur_bookSnap.data().room + "  ->  " + changed_room;
+                    is_changed = true;
+                }
+                if(cur_bookSnap.data().shelf != changed_shelf){
+                    document.getElementById("confirm-shelf").innerHTML = "Shelf: " + cur_bookSnap.data().shelf + "  ->  " + changed_shelf;
+                    is_changed = true;
+                }
+                if(deleted_student != "no-change"){
+                    document.getElementById("confirm-student-deleted").innerHTML = "Student Deleted: " + deleted_student_email;
+                    is_changed = true;
+                }
+                if(new_student != ""){
+                    document.getElementById("confirm-student-added").innerHTML = "Student Added: " + new_student;
+                    is_changed = true;
+                }
+                if(!is_changed){
+                    document.getElementById("no-change").innerHTML = "No Change";
+                }
                 //console.log(booksChecked);
                 //console.log(checkedOutEmail);
                 //console.log(ID);
                 // need to use a documentReference type instead of a documentSnapshot
-                await updateDoc(cur_Ref, {
-                    summary: changed_description,
-                    genre: changed_genre,
-                    room: changed_room,
-                    shelf: changed_shelf,
-                    books_checked: changed_copies_checked,
-                    school_email: student_list
-                });
-                document.getElementById("update-book-button").value = "";
-                alert("Book successfully updated! Return to the book page...");
-                location.href = "admin.html";
+                document.querySelector('.confirm-edit-button').addEventListener('click', async function(){
+                    await updateDoc(cur_Ref, {
+                        summary: changed_description,
+                        genre: changed_genre,
+                        room: changed_room,
+                        shelf: changed_shelf,
+                        books_checked: changed_copies_checked,
+                        school_email: student_list
+                    });
+                    document.getElementById("update-book-button").value = "";
+                    alert("Book successfully updated! Return to the book page...");
+                    location.href = "admin.html";
+                })
             //}
             
         //})
