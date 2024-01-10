@@ -1,0 +1,13 @@
+#checked-books-display{
+    height: 500px;
+    width: 600px;
+    background-color: aliceblue;
+    overflow: scroll;
+    margin: auto;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+hr{
+    border-color: black;
+}

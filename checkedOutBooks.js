@@ -24,91 +24,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export async function importToDatabase () {
-    const booksInDatabase = await getDocs(collection(db, "library"));
-      booksInDatabase.forEach((book) =>{
-          deleteDoc(doc(db, "library", book.id)); //deleteDoc basically deletes everything in the firebase before uploading again
-      }
-      )
-    // try{
-     var file = document.getElementById("bookcsv").files[0];
-          var reader = new FileReader();
-          reader.onload = function(event) {
-            var csvData = event.target.result;
-            var rows = csvData.split("\n");
-            for (var i = 0; i < rows.length; i++) {
-              var cells = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // split is just to include comma in the string without messing up the formatting, look at https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
-              console.log(cells);
-              try {
-                  //console.log(cells[0]);
-                const docRef = addDoc(collection(db, "library"), {
-                  title: cells[0], 
-                  subtitle: cells[1],
-                  author: cells[2],
-                  author_last_first: cells[3],
-                  translator: cells[4],
-                  publisher: cells[5],
-                  year_published: cells[6],
-                  genre: cells[7],
-                  summary: cells[8],
-                  number_of_page: cells[9],
-                  language: cells[10],
-                  ISBN: cells[11],
-                  building: cells[12],
-                  room: cells[13],
-                  shelf: cells[14],
-                  books_checked: cells[15],
-                  total_copies: cells[16],
-                  school_email: cells[17],
-                  // need a list for each copies?
-                });
-                console.log("Document written with ID: ", docRef.id);
-              } 
-              catch (e) {
-                console.error("Error adding to database: ", e);
-              }
-              
-            }
-          };
-          reader.readAsText(file);
-  
-    document.getElementsByTagName("body").style.cursor = "auto";
-  }
-
-// runs the function when first open the page: to get the books from firebase
-export const bookDataFirebase = async function(){
-    const booksInDatabase = await getDocs(collection(db, "library"));
-    var books = [];
-    booksInDatabase.forEach((book) => {
-        books.push(book.data().title, book.data().author, book.data().summary, book.data().genre, book.data().room, book.data().shelf);
-    })
-    localStorage.setItem("book-data", JSON.stringify(books));//send the data to local storage
-    //console.log(JSON.parse(localStorage.getItem("book-data")));
-    console.log("Store the data locally successful");
-}
-
-// first check if the book already exists in the local storage (which means that the user hasn't closed the website since last load), it uses local data to display
-// if local data not exists (which means the user just opened the website), then the 
-export const getBookData = async function(){ 
-    if(localStorage.getItem("book-data") !== null){ 
-        var books = JSON.parse(localStorage.getItem("book-data"));
-        display(books);
-        console.log("suc-from-local-storage");
-    }else{
-        bookDataFirebase();
-    }
-}
-
 //or book.data().school_email.includes(school)
 
-for (let i = 0; i < spreadSheet.data.length; i++) {
-    if (spreadSheet.data[i].School_Email.toLowerCase() == document.getElementById("searching-for-checked-out-books").value) {
-        if (!(document.getElementById("users-checked-out-books").value.includes(spreadSheet.data[i].Title))) {
-            document.getElementById("users-checked-out-books").innerHTML = document.getElementById("users-checked-out-books").innerHTML += spreadSheet.data[i].Book_Title;
+export const showCheckedOut = async function(books){
+  let books_display = document.getElementById("checked-books-display");
+  books_display.innerHTML = "";
+  const booksInDatabase = await getDocs(collection(db, "library"));
+    booksInDatabase.forEach((book) => {
+        try{
+          let cur_email_list = book.data().school_email;
+          let email_searched = document.getElementById("email-searched").value;
+        for(let i = 0; i < cur_email_list.length; i++){
+          if(cur_email_list[i].includes(email_searched)){
+            let add_book = document.createElement("p");
+            add_book.innerHTML = "Book Title: " + book.data().title + "  <br />Author: " + book.data().author + "<br /> Checked out by: " + cur_email_list[i] + "<br /><br /><hr>"; //also need 'checkout out by which student'
+            //add style to the words
+            books_display.appendChild(add_book);
+          }
         }
-    } else{
-        console.log("looks like you dont have anything checked out. maybe you should.. get some books. books are sum what cool. me personally, i dont love books. the last time i read a book just cuz was in 7th grade. now i rarely read an entire book, even of school. I do regret not reading for fun anymore, because i feel like I would be a better writer and reader. There have been many time where my sister would edit my email and make 10x better. I feel like the more lines you see, the more creative or large your basket of words is. thank you america.")
-    }
+        }
+        catch(e){
+
+        }
+    })
+    console.log("Suc");
 }
 
     
