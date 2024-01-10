@@ -55,8 +55,8 @@ export async function importToDatabase () {
                 building: cells[12],
                 room: cells[13],
                 shelf: cells[14],
-                books_checked: cells[15],
-                total_copies: cells[16],
+                books_checked: parseInt(cells[15]),
+                total_copies: parseInt(cells[16]),
                 school_email: [],
                 // need a list for each copies?
               });

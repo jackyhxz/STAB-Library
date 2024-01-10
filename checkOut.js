@@ -48,7 +48,7 @@ export const submitForm = async function (ID, copies_left){
         const booksInDatabase = await getDocs(collection(db, "library"));
         //booksInDatabase.forEach((book) => {
             //if(book.data().ISBN == ISBN){
-                const cur_Ref = doc(db, "library", ID);; //doc(db, "library", "book");
+                const cur_Ref = doc(db, "library", ID); //doc(db, "library", "book");
                 const cur_bookSnap = await getDoc(cur_Ref);
                 var booksChecked = cur_bookSnap.data().books_checked;
                 booksChecked += 1;

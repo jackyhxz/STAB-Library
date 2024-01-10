@@ -31,13 +31,37 @@ export const showCheckedOut = async function(books){
   books_display.innerHTML = "";
   const booksInDatabase = await getDocs(collection(db, "library"));
     booksInDatabase.forEach((book) => {
-        try{
+      try{
           let cur_email_list = book.data().school_email;
           let email_searched = document.getElementById("email-searched").value;
         for(let i = 0; i < cur_email_list.length; i++){
           if(cur_email_list[i].includes(email_searched)){
             let add_book = document.createElement("p");
-            add_book.innerHTML = "Book Title: " + book.data().title + "  <br />Author: " + book.data().author + "<br /> Checked out by: " + cur_email_list[i] + "<br /><br /><hr>"; //also need 'checkout out by which student'
+            let cur_email = cur_email_list[i];
+            let button = document.createElement('button');
+            button.textContent = "Return"; 
+            button.onclick = async function(){
+              cur_email_list.splice(i, 1);
+              const cur_Ref = doc(db, "library", book.id); //doc(db, "library", "book");
+              let new_checked_out_number = book.data().books_checked -= 1;
+              try{
+                await updateDoc(cur_Ref, {
+                  books_checked: new_checked_out_number,
+                  school_email: cur_email_list
+                  });
+                alert("Book '" + book.data().title + "' successfully returned for '" + cur_email + "'.");
+                location.reload();
+              }
+              catch(e){
+                alert("Failed to return due to technical issue...please contact Mr. Taylor...");
+              }
+            }
+            button.classList.add("return-button"); //add class for css use
+            //button.value = bookID;
+            add_book.innerHTML = "Book Title: " + book.data().title + "  <br />Author: " + book.data().author + "<br /> Checked out by: " + cur_email + "<br />"; //also need 'checkout out by which student'
+            add_book.appendChild(button);
+            let hzRule = document.createElement('hr');// make a hr, as you cannot directly add a <hr> in appendChild
+            add_book.appendChild(hzRule);
             //add style to the words
             books_display.appendChild(add_book);
           }
@@ -47,9 +71,7 @@ export const showCheckedOut = async function(books){
 
         }
     })
-    console.log("Suc");
 }
-
     
 
 //what iM THINKING OF DOING IS MAKING A FOR LOOP THEN DOING arr[i].includes(SCHOOL EMAil)
