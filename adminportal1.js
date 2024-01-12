@@ -4,7 +4,7 @@
 
 
 // password name
-var password = "SisterPirateJenny"; 
+var password = "stabexlibris"; 
 
 function setCookie(cname, cvalue, exdays) {
   const d = new Date();
