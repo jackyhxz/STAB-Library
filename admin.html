@@ -36,10 +36,9 @@
         <script type="module">
             
             // import functions from the js in order to use it here in html
-            import {getEditData, bookDataFirebaseEdit, displayeditpage, updateSearching, limitGenre} from './admin.js';
+            import {importToDatabase, getEditData, bookDataFirebaseEdit, displayeditpage, updateSearching, limitGenre} from './admin.js';
              
-              // window.importSchoolsToDatabase = importSchoolsToDatabase;
-              //window.importToDatabase = importToDatabase;
+              window.importToDatabase = importToDatabase;
               window.getEditData = getEditData;
               window.bookDataFirebaseEdit = bookDataFirebaseEdit;
               window.displayeditpage = displayeditpage;
@@ -264,12 +263,11 @@
                     } */
                     
                 </script>
-    <!-- import data through a upload and submit button to the firebase, only need to run it once to initialize the data
+    <!-- import data through a upload and submit button to the firebase, only need to run it once to initialize the data -->
     <button onclick="importToDatabase()"> submit</button>
         <input type="file" id="bookcsv">
-        <input type="submit">
     </form>
-    -->
+    
     </body>
     
     </html>

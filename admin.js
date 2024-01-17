@@ -17,6 +17,59 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+export async function importToDatabase () {
+    const booksInDatabase = await getDocs(collection(db, "library"));
+  
+    try{
+     var file = document.getElementById("bookcsv").files[0];
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            var csvData = event.target.result;
+            var rows = csvData.split("\n");
+            for (var i = 0; i < rows.length; i++) {
+              var cells = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // split is just to include comma in the string without messing up the formatting, look at https://stackoverflow.com/questions/11456850/split-a-string-by-commas-but-ignore-commas-within-double-quotes-using-javascript
+              console.log(cells);
+              try {
+                  //console.log(cells[0]);
+                const docRef = addDoc(collection(db, "library"), {
+                  title: cells[0], 
+                  subtitle: cells[1],
+                  author: cells[2],
+                  author_last_first: cells[3],
+                  translator: cells[4],
+                  publisher: cells[5],
+                  year_published: cells[6],
+                  genre: cells[7],
+                  summary: cells[8],
+                  number_of_page: cells[9],
+                  language: cells[10],
+                  ISBN: cells[11],
+                  building: cells[12],
+                  room: cells[13],
+                  shelf: cells[14],
+                  books_checked: parseInt(cells[15]),
+                  total_copies: parseInt(cells[16]),
+                  school_email: [],
+                  // need a list for each copies?
+                });
+                console.log("Document written with ID: ", docRef.id);
+              } 
+              catch (e) {
+                console.error("Error adding to database: ", e);
+              }
+              
+            }
+          };
+          reader.readAsText(file);
+  
+    document.getElementsByTagName("body").style.cursor = "auto";
+
+    }
+    catch(e){
+        elert("Failed to upload books...please contact a technician");
+    }
+  }
+
 // first check if the book already exists in the local storage (which means that the user hasn't closed the website since last load), it uses local data to display
 // if local data not exists (which means the user just opened the website), then the 
 export const getEditData = async function(){
