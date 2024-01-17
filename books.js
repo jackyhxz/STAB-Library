@@ -77,7 +77,7 @@ export async function importToDatabase () {
 // if local data not exists (which means the user just opened the website), then the 
 export const getBookData = async function(){ // !!!!!!!!!!!!!!!do i need to clear localstorage using localStorage.clear() after a change in firebase??????????
     //if change in firebase: 
-    //localStorage.clear();
+    localStorage.clear();
     if(localStorage.getItem("book-data") !== null){ 
         var books = JSON.parse(localStorage.getItem("book-data"));
         display(books);
