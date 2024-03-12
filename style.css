@@ -264,7 +264,7 @@ grid-row: 1/2;
 grid-column: 2/3;
 justify-self: center;
 position: absolute;
-width: 30vw;
+width: 40vw;
 top: 50%;
 -ms-transform: translateY(-50%);
 transform: translateY(-50%);
