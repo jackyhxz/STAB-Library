@@ -1,7 +1,9 @@
 #checked-books-display{
     height: 500px;
     width: 600px;
-    background-color: aliceblue;
+    opacity: 90%;
+    background-color: white;
+    color: lightgray;
     overflow: scroll;
     margin: auto;
     padding: 10px;
