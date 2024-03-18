@@ -1,5 +1,5 @@
 #checked-books-display{
-    height: 500px;
+    height: 350px;
     width: 600px;
     opacity: 90%;
     background-color: white;
@@ -8,6 +8,7 @@
     margin: auto;
     padding: 10px;
     border-radius: 10px;
+    z-index: -5;
 }
 
 hr{
