@@ -44,9 +44,9 @@ export const autoFill = async function(){
 
 export const submitForm = async function (ID, copies_left){
     try{
-        // email verification that checks if the user enters a valid email (or STAB email?)
-        if(!document.getElementById("check-out-form-name-book").value.includes(".") || !document.getElementById("check-out-form-name-book").value.includes("@")){
-            alert("Please type in a valid email address...");
+        // email verification that checks if the user enters a valid STAB email
+        if(!document.getElementById("check-out-form-name-book").value.includes("stab.org")){
+            alert("Please type in a valid STAB email address...");
             location.href = "checkOut.html";
         }
         const booksInDatabase = await getDocs(collection(db, "library"));
